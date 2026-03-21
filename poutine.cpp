@@ -28,11 +28,11 @@ int main() {
     auto today_int = today.as_number() - 1;
     cout << "Today is " << today.as_long_string() << endl;
 
-    for (int i = 0; i < tasks.size(); i++) {
-        const auto& task = tasks[i];
+    int i = 0;
+    for (const auto& task : tasks) {
         if (!task.today(today))
             continue;
-        cout << ' ' << (i+1) << ". " << task.name << ' ';
+        cout << ' ' << ++i << ". " << task.name << ' ';
         if (task.is_time_based())
             cout << task::timestamp(task.days[today_int]);
         else
