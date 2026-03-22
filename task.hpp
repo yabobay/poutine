@@ -16,6 +16,6 @@ public:
     static string timestamp(unsigned short n);
 
     void print() const;
-    bool today(boost::gregorian::greg_weekday) const;
+    bool is_today(boost::gregorian::greg_weekday) const;
     bool is_time_based() const;
 };

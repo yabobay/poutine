@@ -7,7 +7,7 @@
 
 using namespace std;
 
-const array<string, 7> days({"mon", "tue", "wed", "thu", "fri", "sat", "sun"});
+const array<string, 7> days({"sun", "mon", "tue", "wed", "thu", "fri", "sat"});
 const vector<pair<int, char>> time_units({ {3600, 'h'}, {60, 'm'}, {1, 's'} });
 
 int day_number(const string_view& day_) {
@@ -172,8 +172,8 @@ void task::print() const {
         cout << "noun: \"" << *noun << '"' << endl;
 }
 
-bool task::today(boost::gregorian::greg_weekday day) const {
-    return days[day.as_number() - 1];
+bool task::is_today(boost::gregorian::greg_weekday day) const {
+    return days[day.as_number()];
 }
 
 bool task::is_time_based() const {

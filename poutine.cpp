@@ -25,18 +25,17 @@ int main() {
     }
 
     auto today = boost::gregorian::day_clock::local_day().day_of_week();
-    auto today_int = today.as_number() - 1;
     cout << "Today is " << today.as_long_string() << endl;
 
     int i = 0;
     for (const auto& task : tasks) {
-        if (!task.today(today))
+        if (!task.is_today(today))
             continue;
         cout << ' ' << ++i << ". " << task.name << ' ';
         if (task.is_time_based())
-            cout << task::timestamp(task.days[today_int]);
+            cout << task::timestamp(task.days[today]);
         else
-            cout << task.days[today_int];
+            cout << task.days[today];
         if (task.noun.has_value())
             cout << ' ' << *task.noun;
         cout << endl;
