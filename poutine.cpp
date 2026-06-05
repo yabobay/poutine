@@ -19,9 +19,15 @@ int main() {
     vector<task> tasks;
     string line;
     while (getline(tasks_file, line)) {
+        if (line.front() == '#')
+            continue;
         auto t = task::parse(line);
         if (t.has_value())
             tasks.push_back(*t);
+        else {
+            cout << "Confusing line :" << line;
+            continue;
+        }
     }
 
     auto today = boost::gregorian::day_clock::local_day().day_of_week();
@@ -31,13 +37,11 @@ int main() {
     for (const auto& task : tasks) {
         if (!task.is_today(today))
             continue;
-        cout << ' ' << ++i << ". " << task.name << ' ';
+        cout << ' ' << ++i << ". " << task.name;
         if (task.is_time_based())
-            cout << task::timestamp(task.days[today]);
-        else
-            cout << task.days[today];
-        if (task.noun.has_value())
-            cout << ' ' << *task.noun;
+            cout << ' ' << task::timestamp(task.days[today]);
+        else if (task.noun.has_value())
+            cout << ' ' << task.days[today] << ' ' << *task.noun;
         cout << endl;
     }
 }

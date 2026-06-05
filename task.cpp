@@ -72,8 +72,6 @@ void trim_end(string& s) {
 // 🍝🍝🍝
 optional<task> task::parse(const string& line) {
     task t;
-    if (line.front() == '#')
-        return {};
 
     static const regex day { "mon|tue|wed|thu|fri|sat|sun" };
     smatch match;
@@ -109,7 +107,7 @@ optional<task> task::parse(const string& line) {
 
     t.name = match.prefix();
 
-    bool all_same = false;
+    bool all_days_same_amount = false;
     int n = -1;
 
     string_view rest(line.data()+match.position(), line.size()-match.position());
@@ -120,18 +118,24 @@ optional<task> task::parse(const string& line) {
         if (day_num != -1) {
         back:
             ++i;
-            auto next_day_num = day_number(i->first);
-            if (next_day_num != -1) {
-                all_same = true;
-                t.days[day_num] = true;
-                day_num = next_day_num;
-                goto back;
-            } else if (all_of(i->first.begin(), i->first.end(), [] (auto i) { return isdigit(i) || isspace(i); })) {
-                from_chars(i->first.begin(), i->first.end(), t.days[day_num]);
-                n = t.days[day_num];
-            } else if (isdigit(i->first[0]))
-               n = t.days[day_num] = parse_timestamp(i->first);
-            else return {};
+            if (i == words.end()) {
+                t.days[day_num] = 1;
+            } else {
+                auto next_day_num = day_number(i->first);
+                if (next_day_num != -1) {
+                    all_days_same_amount = true;
+                    t.days[day_num] = true;
+                    day_num = next_day_num;
+                    goto back;
+                } else if (all_of(i->first.begin(), i->first.end(), [] (auto i) { return isdigit(i) || isspace(i); })) {
+                    from_chars(i->first.begin(), i->first.end(), t.days[day_num]);
+                    n = t.days[day_num];
+                } else if (isdigit(i->first[0])) {
+                    n = t.days[day_num] = parse_timestamp(i->first);
+                    t.mark_as_time_based();
+                }
+                else return {};
+            }
         } else {
             if (!t.noun.has_value())
                 t.noun.emplace(token);
@@ -140,7 +144,7 @@ optional<task> task::parse(const string& line) {
         }
     }
 
-    if (all_same)
+    if (all_days_same_amount)
         for (auto& i : t.days)
             if (i)
                 i = n;
@@ -178,4 +182,8 @@ bool task::is_today(boost::gregorian::greg_weekday day) const {
 
 bool task::is_time_based() const {
     return noun.has_value() && !noun->size();
+}
+
+void task::mark_as_time_based() {
+    noun.emplace("");
 }

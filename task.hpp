@@ -9,7 +9,7 @@ using namespace std;
 class task {
 public:
     string name;
-    optional<string> noun;
+    optional<string> noun; // a value of an empty string indicates task has a timestamp
     unsigned short days[7] = {0};
 
     static optional<task> parse(const string& line);
@@ -18,4 +18,6 @@ public:
     void print() const;
     bool is_today(boost::gregorian::greg_weekday) const;
     bool is_time_based() const;
+
+    void mark_as_time_based();
 };
