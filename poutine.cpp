@@ -19,7 +19,7 @@ int main() {
     vector<task> tasks;
     string line;
     while (getline(tasks_file, line)) {
-        if (line.front() == '#')
+        if (!line.size() || all_of(line.begin(), line.end(), [](char c) { return isspace(c); }) || line.front() == '#')
             continue;
         auto t = task::parse(line);
         if (t.has_value())

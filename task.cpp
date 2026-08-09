@@ -88,14 +88,19 @@ optional<task> task::parse(const string& line) {
             t.name.assign(line, 0, words.back().second);
             t.noun.emplace("");
         } else {
+            bool found_number = false;
             for (auto i = words.rbegin() + 1; i < words.rend(); i++) {
                 if (isdigit(i->first.front())) {
+                    found_number = true;
                     t.name.assign(line, 0, i->second);
                     from_chars(i->first.begin(), i->first.end(), n);
                     auto x = i->second + i->first.size();
                     t.noun.emplace(line, x, line.length() - x);
                     break;
                 }
+            }
+            if (!found_number) {
+                t.name = line;
             }
         }
 
